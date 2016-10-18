@@ -17,7 +17,9 @@ import java.nio.charset.Charset;
  */
 public class Info {
 
-    
+    public static void main(String[] args) {
+        System.out.println(new Info().getWeather("new york"));
+    }
 
     String getTime(String info) {
         String respondHour = null;
@@ -116,7 +118,7 @@ public class Info {
             String extraInfo = "";
             for (int i = 0; i < infoArray.length; i++) {
                 if (i < (infoArray.length - 1)) {
-                    extraInfo += infoArray[i] + "+";
+                    extraInfo += infoArray[i] + "-";
                 } else {
                     extraInfo += infoArray[i];
                 }
@@ -140,12 +142,12 @@ public class Info {
             while ((line = r.readLine()) != null) {
                 sb.append(line);
             }
+
             String[] list = sb.toString().split("<a href=\"");
             for (int i = 0; i < list.length; i++) {
 
-                if (list[i].split("\"")[0].contains("/" + info) && list[i].split("\"")[0].contains("/weather")) {
+                if (list[i].split("\"")[0].contains("/" + extraInfo) && list[i].split("\"")[0].contains("/weather")) {
                     String url = "http://www.timeanddate.com/" + list[i].split("\"")[0];
-
                     output = getMoreInfo(url, false);
                     break;
                 }
@@ -244,11 +246,19 @@ public class Info {
                 //
                 return forcastWeather;
             }
-
             String feelsLike = sb.toString().split("Feels Like:")[1].split("&nbsp;°C<br>")[0];
             feelsLike += " celsius degrees ";
-
-            double bofour = (Integer.parseInt((sb.toString().split("Wind:")[1].split("km/h")[0]).replaceAll(" ", "")) / 3.6f);
+            double bofour = -1;
+            String []windList=sb.toString().split("Wind:");
+            for (int i = 0; i < windList.length; i++) {
+                String windString=windList[i].split("km/h")[0];
+               try{
+                bofour = (Integer.parseInt((sb.toString().split("Wind:")[1].split("km/h")[0]).replaceAll(" ", "")) / 3.6f);
+                break;
+               }catch(Exception e){
+               
+               }
+            }
             bofour = Math.round(bofour * 100.0) / 100.0;
             String wind = "wind speed at " + bofour + " Beaufort, ";
 
@@ -263,7 +273,6 @@ public class Info {
             String pressure = sb.toString().split("Pressure: </span>")[1].split("mbar")[0] + "mbar";
             String[] infosFromUrl = url.split("/");
             String city = infosFromUrl[infosFromUrl.length - 1];
-            System.out.println(wind);
 
             output = "in " + city + " we currently have " + title + ". The temperature is " + temp + " and feels like " + feelsLike + " with " + wind + ". Humidity is " + humidity + " and pressure is at " + pressure;
         } catch (Exception e) {
