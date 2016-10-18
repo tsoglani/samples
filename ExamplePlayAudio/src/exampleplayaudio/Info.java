@@ -159,67 +159,57 @@ public class Info {
 
         return output;
     }
-//
-//    String getForcastWeather(String info) {
-//        String output = null;
-//        try {
-//
-//            String a = "http://www.timeanddate.com/weather/?query=";
-//            String[] infoArray = info.split(" ");
-//            String extraInfo = "";
-//            for (int i = 0; i < infoArray.length; i++) {
-//                if (i < (infoArray.length - 1)) {
-//                    extraInfo += infoArray[i] + "+";
-//                } else {
-//                    extraInfo += infoArray[i];
-//                }
-//            }
-//            if (infoArray.length == 0) {
-//                extraInfo = info;
-//            }
-//            a += extraInfo;
-//
-//            URLConnection connection = new URL(a).openConnection();
-//            connection
-//                    .setRequestProperty("User-Agent",
-//                            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-//            connection.connect();
-//
-//            BufferedReader r = new BufferedReader(new InputStreamReader(connection.getInputStream(),
-//                    Charset.forName("UTF-8")));
-//
-//            StringBuilder sb = new StringBuilder();
-//            String line;
-//            while ((line = r.readLine()) != null) {
-//                sb.append(line);
-//            }
-//            String[] list = sb.toString().split("<a href=\"/");
-//            System.out.println(sb.toString());
-//            for (int i = 0; i < list.length; i++) {
-//                if (list[i].contains("/" + "info")) {
-//
-//                    String url = "http://www.timeanddate.com/" + sb.toString().split("<a href=\"/")[1].split("\"")[0];
-//
-//                    System.out.println("url " + url);
-//                    output = getMoreInfo(url, false);
-//                    break;
-//                }
-//            }            //  http://www.timeanddate.com/weather/greece/athens
-//
-////            System.out.println("url " + url);
-////            String[] respondArray = sb.toString().split("<td class=rbi>");
-////            String celcium = respondArray[1].split("&nbsp;°C</td>")[0];
-////            celcium += "°C";
-////            output = getMoreInfo(url, true);
-//
-////            output = celcium;
-////            System.out.println(output);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return output;
-//    }
+
+    String getForcastWeather(String info) {
+        String output = null;
+        try {
+
+            String a = "http://www.timeanddate.com/weather/?query=";
+            String[] infoArray = info.split(" ");
+            String extraInfo = "";
+            for (int i = 0; i < infoArray.length; i++) {
+                if (i < (infoArray.length - 1)) {
+                    extraInfo += infoArray[i] + "-";
+                } else {
+                    extraInfo += infoArray[i];
+                }
+            }
+            if (infoArray.length == 0) {
+                extraInfo = info;
+            }
+            a += extraInfo;
+
+            URLConnection connection = new URL(a).openConnection();
+            connection
+                    .setRequestProperty("User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+            connection.connect();
+
+            BufferedReader r = new BufferedReader(new InputStreamReader(connection.getInputStream(),
+                    Charset.forName("UTF-8")));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) {
+                sb.append(line);
+            }
+
+            String[] list = sb.toString().split("<a href=\"");
+            for (int i = 0; i < list.length; i++) {
+
+                if (list[i].split("\"")[0].contains("/" + extraInfo) && list[i].split("\"")[0].contains("/weather")) {
+                    String url = "http://www.timeanddate.com/" + list[i].split("\"")[0];
+                    output = getMoreInfo(url, true);
+                    break;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return output;
+    }
 
     String getMoreInfo(String url, boolean wantsForcast) {
         String output = null;
@@ -249,15 +239,15 @@ public class Info {
             String feelsLike = sb.toString().split("Feels Like:")[1].split("&nbsp;°C<br>")[0];
             feelsLike += " celsius degrees ";
             double bofour = -1;
-            String []windList=sb.toString().split("Wind:");
+            String[] windList = sb.toString().split("Wind:");
             for (int i = 0; i < windList.length; i++) {
-                String windString=windList[i].split("km/h")[0];
-               try{
-                bofour = (Integer.parseInt((sb.toString().split("Wind:")[1].split("km/h")[0]).replaceAll(" ", "")) / 3.6f);
-                break;
-               }catch(Exception e){
-               
-               }
+                String windString = windList[i].split("km/h")[0];
+                try {
+                    bofour = (Integer.parseInt((sb.toString().split("Wind:")[1].split("km/h")[0]).replaceAll(" ", "")) / 3.6f);
+                    break;
+                } catch (Exception e) {
+
+                }
             }
             bofour = Math.round(bofour * 100.0) / 100.0;
             String wind = "wind speed at " + bofour + " Beaufort, ";
