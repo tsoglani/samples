@@ -1,5 +1,7 @@
+//http://www.codejava.net/coding/capture-and-record-sound-into-wav-file-with-java-sound-api
+//http://stackoverflow.com/questions/25798200/java-record-mic-to-byte-array-and-play-sound  
 
-    void capture() {
+  void capture() {
    
 try { 
     AudioFormat format = new AudioFormat(8000.0f, 16, 1, true, true);
